@@ -1,87 +1,88 @@
-# CryptoScope — Analytics Dashboard
+# CryptoScope — Dashboard de Analytics
 
-A production-quality crypto analytics dashboard consuming the CoinGecko public API. Built to demonstrate real API consumption, complex state management, and clean component architecture.
+Um dashboard de analytics de criptomoedas com qualidade de produção, consumindo a API pública do CoinGecko. Construído para demonstrar consumo real de API, gerenciamento de estado complexo e arquitetura limpa de componentes.
 
-> **Live demo:** _Add your Vercel URL here after deployment_
+> **Demo ao vivo:** [https://cryptoscope-tau.vercel.app](https://cryptoscope-tau.vercel.app)
+![alt text](image.png)
 
 ---
 
-## Tech Stack
+## Stack
 
-| Concern | Library |
+| Responsabilidade | Biblioteca |
 |---|---|
 | Framework | React 18 + TypeScript (strict) |
-| Styling | TailwindCSS v4 |
-| Charts | Recharts |
-| Global state | Zustand + persist middleware |
-| Data fetching | TanStack Query v5 |
-| Routing | React Router v6 |
-| Icons | Lucide React |
+| Estilização | TailwindCSS v4 |
+| Gráficos | Recharts |
+| Estado global | Zustand + persist middleware |
+| Busca de dados | TanStack Query v5 |
+| Roteamento | React Router v6 |
+| Ícones | Lucide React |
 | API | CoinGecko Public API |
 
 ---
 
-## Features
+## Funcionalidades
 
-- **4 KPI cards** — Market Cap, 24h Volume, Avg Price Change, BTC Dominance
-- **Line chart** — Bitcoin price history with 7D / 30D / 90D period selector
-- **Bar chart** — Top 10 coins by 24h trading volume
-- **Sortable data table** — Sort by price, change %, market cap, volume
-- **Search with debounce** — 300ms debounced filter across coin name/symbol
-- **Sparkline mini-charts** — 7-day price trend per row
-- **Coin detail page** — Click any row → `/coin/:id` with full price chart
-- **Dark / light mode** — Toggle persisted in `localStorage`
-- **Loading skeletons** — All async content uses skeleton placeholders
-- **Error boundary** — User-friendly fallback with retry action
-- **Fully responsive** — Mobile, tablet, desktop layouts
+- **4 cards de KPI** — Market Cap, Volume 24h, Variação Média de Preço, Dominância do BTC
+- **Gráfico de linha** — Histórico de preço do Bitcoin com seletor de período 7D / 30D / 90D
+- **Gráfico de barras** — Top 10 moedas por volume de negociação em 24h
+- **Tabela ordenável** — Ordenação por preço, variação %, market cap e volume
+- **Busca com debounce** — Filtro com 300ms de debounce por nome/símbolo da moeda
+- **Sparklines** — Mini gráfico de tendência dos últimos 7 dias por linha da tabela
+- **Página de detalhe** — Clique em qualquer linha → `/coin/:id` com gráfico completo
+- **Modo escuro / claro** — Toggle persistido no `localStorage`
+- **Skeletons de carregamento** — Todo conteúdo assíncrono usa placeholders de skeleton
+- **Error boundary** — Fallback amigável com ação de tentar novamente
+- **Totalmente responsivo** — Layouts para mobile, tablet e desktop
 
 ---
 
-## How to Run Locally
+## Como Rodar Localmente
 
 ```bash
-git clone <repo-url>
+git clone <url-do-repo>
 cd analytics-dashboard
 npm install
 npm run dev
 ```
 
-Open [http://localhost:5173](http://localhost:5173).
+Acesse [http://localhost:5173](http://localhost:5173).
 
-> The CoinGecko free tier allows ~30 req/min. React Query caches responses for 60s to stay well within limits.
+> A camada gratuita do CoinGecko permite ~30 req/min. O React Query armazena em cache as respostas por 60s para ficar bem dentro do limite.
 
 ---
 
-## Project Structure
+## Estrutura do Projeto
 
 ```
 src/
-├── components/       # Reusable UI: Card, Skeleton, ChangeBadge, ErrorBoundary, Navbar
+├── components/       # UI reutilizável: Card, Skeleton, ChangeBadge, ErrorBoundary, Navbar
 ├── features/
 │   ├── dashboard/    # KpiCards, PriceChart, VolumeChart
 │   └── coins/        # CoinTable, SearchInput, Sparkline
 ├── hooks/            # useCoinList, useCoinHistory, useGlobal, useDebounce
 ├── pages/            # DashboardPage, CoinDetailPage
-├── services/         # coinGecko.ts — all fetch calls, fully typed
-├── stores/           # uiStore (Zustand) — theme, period, sort, search
-├── types/            # Shared TypeScript interfaces
-└── utils/            # formatters.ts — currency, percent, large numbers
+├── services/         # coinGecko.ts — todas as chamadas fetch, totalmente tipadas
+├── stores/           # uiStore (Zustand) — tema, período, ordenação, busca
+├── types/            # Interfaces TypeScript compartilhadas
+└── utils/            # formatters.ts — moeda, percentual, números grandes
 ```
 
 ---
 
-## Architectural Decisions
+## Decisões Arquiteturais
 
-**Zustand over Context API** — Context re-renders the entire subtree on every state change. Zustand uses a subscription model so only components that consume a specific slice re-render. For a dashboard with frequent data updates, this matters.
+**Zustand em vez de Context API** — O Context re-renderiza toda a subárvore a cada mudança de estado. O Zustand usa um modelo de assinatura, então apenas os componentes que consomem uma fatia específica re-renderizam. Para um dashboard com atualizações frequentes de dados, isso faz diferença.
 
-**React Query for server state** — Server state (API data) and client state (UI preferences) have different lifecycles. React Query handles caching, background refetching, stale-while-revalidate, and deduplication out of the box. `staleTime: 60s` prevents hammering the free-tier API.
+**React Query para estado do servidor** — Estado do servidor (dados da API) e estado do cliente (preferências de UI) têm ciclos de vida diferentes. O React Query cuida de cache, refetch em background, stale-while-revalidate e deduplicação automaticamente. `staleTime: 60s` evita sobrecarregar a API gratuita.
 
-**Services separated from hooks** — `services/coinGecko.ts` contains pure fetch functions with no React dependency. Hooks in `hooks/` compose those with React Query. This makes the fetch logic independently testable and reusable outside React.
+**Services separados dos hooks** — `services/coinGecko.ts` contém funções de fetch puras, sem dependência do React. Os hooks em `hooks/` compõem essas funções com o React Query. Isso torna a lógica de fetch testável de forma independente e reutilizável fora do React.
 
-**Skeletons over spinners** — Skeletons preserve layout during loading, preventing cumulative layout shift (CLS) and giving users a sense of the content structure before it arrives.
+**Skeletons em vez de spinners** — Skeletons preservam o layout durante o carregamento, evitando Cumulative Layout Shift (CLS) e dando ao usuário uma noção da estrutura do conteúdo antes de ele chegar.
 
-**No component fetches directly** — All data flows through custom hooks. Components receive data via props. This keeps components pure, predictable, and easy to test in isolation.
+**Nenhum componente busca dados diretamente** — Todos os dados fluem por hooks customizados. Componentes recebem dados via props. Isso mantém os componentes puros, previsíveis e fáceis de testar isoladamente.
 
-**Formatters in utils** — Formatting logic (currency, percent, large numbers) lives in `utils/formatters.ts`. Inline formatting in JSX is hard to test and creates inconsistency across the UI.
+**Formatadores em utils** — A lógica de formatação (moeda, percentual, números grandes) vive em `utils/formatters.ts`. Formatação inline no JSX é difícil de testar e gera inconsistência na UI.
 
-**Debounce hook** — `useDebounce` delays the search query by 300ms, preventing a filter recalculation on every keystroke. The actual filtering happens in a `useMemo` inside `CoinTable`, so it only recomputes when the debounced value or sort state changes.
+**Hook de debounce** — `useDebounce` atrasa a query de busca em 300ms, evitando recalcular o filtro a cada tecla pressionada. A filtragem real acontece em um `useMemo` dentro do `CoinTable`, então só recomputa quando o valor com debounce ou o estado de ordenação muda.
