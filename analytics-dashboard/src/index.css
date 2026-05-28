@@ -1,0 +1,9 @@
+@import "tailwindcss";
+
+:root {
+  --tooltip-bg: #ffffff;
+}
+
+.dark {
+  --tooltip-bg: #18181b;
+}
